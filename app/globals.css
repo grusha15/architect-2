@@ -1,0 +1,148 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, "SF Mono", Menlo, monospace;
+
+  --color-paper: #f6f5f1;
+  --color-surface: #ffffff;
+  --color-sunken: #efede7;
+  --color-line: #e2dfd6;
+  --color-line-strong: #cfcbbf;
+  --color-ink: #14161f;
+  --color-ink-2: #4a4e5c;
+  --color-ink-3: #80838f;
+
+  --color-bp: #2747d6;
+  --color-bp-600: #1f3bb8;
+  --color-bp-50: #eef1fd;
+  --color-bp-100: #dce3fb;
+
+  --color-ok: #0f9d6b;
+  --color-ok-50: #e7f6ef;
+  --color-warn: #c77a06;
+  --color-warn-50: #fdf4e3;
+  --color-bad: #d23b3b;
+  --color-bad-50: #fcecec;
+
+  --color-night: #0e1017;
+  --color-night-2: #151823;
+  --color-night-3: #1e2230;
+  --color-night-line: #2a2f40;
+}
+
+html,
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--color-bp-100);
+}
+
+.bp-grid {
+  background-image:
+    linear-gradient(to right, rgb(39 71 214 / 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(39 71 214 / 0.06) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.bp-grid-fine {
+  background-image: radial-gradient(rgb(20 22 31 / 0.08) 1px, transparent 1px);
+  background-size: 14px 14px;
+}
+
+.label-mono {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.scroll-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line-strong) transparent;
+}
+
+.scroll-night {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-night-line) transparent;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.anim-rise {
+  animation: rise 0.35s ease-out both;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -400px 0;
+  }
+  100% {
+    background-position: 400px 0;
+  }
+}
+.skeleton {
+  background: linear-gradient(90deg, #ecebe6 0%, #f6f5f1 50%, #ecebe6 100%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+.caret::after {
+  content: "▋";
+  margin-left: 2px;
+  animation: blink 1s step-end infinite;
+  color: var(--color-bp);
+}
+
+@keyframes dash {
+  to {
+    stroke-dashoffset: -20;
+  }
+}
+.flow-line {
+  stroke-dasharray: 5 5;
+  animation: dash 0.9s linear infinite;
+}
+
+[data-edit] {
+  outline: 1.5px dashed transparent;
+  outline-offset: 2px;
+  transition: outline-color 0.12s;
+}
+.edit-mode [data-edit]:hover:not(:has([data-edit]:hover)) {
+  outline-color: var(--color-bp);
+  cursor: crosshair;
+}
+[data-edit][data-selected="true"] {
+  outline: 2px solid var(--color-bp) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
