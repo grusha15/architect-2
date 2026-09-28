@@ -38,9 +38,25 @@ function Login() {
     getProfile(user.id).then((p) => router.replace(p ? next : `/onboarding?next=${encodeURIComponent(next)}`));
   }, [user, loading, next, router]);
 
+  // Which OAuth providers are switched on in Supabase (null = unknown / demo mode)
+  const [enabled, setEnabled] = useState<Record<string, boolean> | null>(null);
+  useEffect(() => {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    if (!url || !key) return;
+    fetch(`${url}/auth/v1/settings`, { headers: { apikey: key } })
+      .then((r) => r.json())
+      .then((d) => setEnabled(d.external ?? null))
+      .catch(() => {});
+  }, []);
+
   const provider = async (p: "google" | "github") => {
-    setBusy(p);
     setError(null);
+    if (enabled && !enabled[p]) {
+      setError(`${p === "google" ? "Google" : "GitHub"} sign-in isn't switched on for this demo yet. Use the email link below.`);
+      return;
+    }
+    setBusy(p);
     await signInWithProvider(p, next);
   };
 
