@@ -18,6 +18,7 @@ import {
   Workflow,
 } from "lucide-react";
 import { Composer, type ComposerSubmit } from "@/components/Composer";
+import { Pricing } from "@/components/Pricing";
 import { GitHubIcon, Wordmark } from "@/components/icons";
 import { Button } from "@/components/ui";
 import { useAuth } from "@/lib/auth";
@@ -32,7 +33,7 @@ export default function Landing() {
 
   const go = async (v: ComposerSubmit) => {
     setBusy(true);
-    const pending = { prompt: v.prompt, source: "prompt" as const, framework: v.framework, model: v.model };
+    const pending = { prompt: v.prompt, source: "prompt" as const, framework: v.framework, model: v.model, attachments: v.attachments };
     if (!user) {
       savePending(pending);
       router.push("/login?next=/new");
@@ -73,16 +74,18 @@ export default function Landing() {
       {/* Hero */}
       <section className="bp-grid relative border-b border-line">
         <div className="mx-auto max-w-3xl px-5 pb-20 pt-16 text-center sm:pt-24">
-          <p className="label-mono mb-5 inline-flex items-center gap-2 rounded-full border border-bp-100 bg-bp-50 px-3 py-1 text-bp">
-            <Sparkles className="size-3" /> For builders and developers
-          </p>
+          <a href="#lenses" className="group mb-7 inline-flex items-center gap-2.5 text-[13.5px] text-ink-2 hover:text-ink">
+            <span className="rounded-[5px] bg-ink px-1.5 py-[3px] font-mono text-[10.5px] font-semibold leading-none text-white">2.0</span>
+            <span>New: a Code view for developers, on the same project</span>
+            <ArrowRight className="size-3.5 text-ink-3 transition group-hover:translate-x-0.5 group-hover:text-ink" />
+          </a>
           <h1 className="text-balance text-[40px] font-semibold leading-[1.05] tracking-[-0.03em] sm:text-[58px]">
             Describe it. Watch it build.
             <br />
             <span className="text-bp">Own every line.</span>
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-pretty text-[16px] leading-relaxed text-ink-2">
-            Architect turns a sentence into a working agentic app — with a plan you approve, a live preview, real code in your GitHub, and a URL your team can use today.
+            Architect turns a sentence into a working agentic app. You approve a plan, watch a live preview, keep real code in your GitHub, and get a URL your team can use today.
           </p>
           <div className="mt-9 text-left">
             <Composer onSubmit={go} busy={busy} autoFocus initial={seed} />
@@ -112,7 +115,7 @@ export default function Landing() {
 
       {/* How it works */}
       <section id="how" className="mx-auto max-w-6xl px-5 py-20">
-        <SectionHead kicker="How it works" title="From intent to a live URL in five visible steps" body="No black box. Every step shows what the agent is doing — in plain English by default, down to the tool calls when you want them." />
+        <SectionHead kicker="How it works" title="From intent to a live URL in five visible steps" body="No black box. Every step shows what the agent is doing, in plain English by default and down to the tool calls when you want them." />
         <ol className="mt-10 grid gap-3 md:grid-cols-5">
           {[
             { icon: Sparkles, t: "Prompt", d: "Say what you want. Attach docs, screenshots or a Figma file." },
@@ -141,14 +144,14 @@ export default function Landing() {
             <LensCard
               tone="light"
               icon={<MonitorPlay className="size-4" />}
-              title="Preview lens — for builders"
+              title="Preview lens, for builders"
               points={["Chat, plan and live preview", "Click any element to change it", "Restore points with thumbnails", "Plain-English errors with one-click fixes"]}
             />
             <LensCard
               tone="dark"
               icon={<Code2 className="size-4" />}
-              title="Code lens — for developers"
-              points={["Editor, terminal and per-turn diffs", "Import any repo, bring any framework", "Pick the model per task, bring your own key", "Branches, PRs and CI — never force-pushed"]}
+              title="Code lens, for developers"
+              points={["Editor, terminal and per-turn diffs", "Import any repo, bring any framework", "Pick the model per task, bring your own key", "Branches, PRs and CI, never force-pushed"]}
             />
           </div>
         </div>
@@ -166,7 +169,7 @@ export default function Landing() {
             { icon: FolderGit2, t: "GitHub, both ways", d: "Create or import repos. Changes land on branches and PRs; pushes sync back." },
             { icon: ShieldCheck, t: "Evals before deploy", d: "Auto-generated test cases run against your agents before anything ships." },
             { icon: Rocket, t: "One-click deploy", d: "Architect Cloud, Vercel or Docker export. Preview env per branch." },
-            { icon: Boxes, t: "Integrations & MCP", d: "Slack, Sheets, Gmail, HubSpot, Supabase — or any MCP server." },
+            { icon: Boxes, t: "Integrations & MCP", d: "Slack, Sheets, Gmail, HubSpot, Supabase, or any MCP server." },
           ].map((f) => (
             <div key={f.t} className="rounded-xl border border-line bg-surface p-5">
               <f.icon className="size-5 text-bp" />
@@ -181,26 +184,8 @@ export default function Landing() {
       <section id="pricing" className="border-t border-line bg-surface">
         <div className="mx-auto max-w-6xl px-5 py-20">
           <SectionHead kicker="Pricing" title="Pay for what you build and what you run" />
-          <div className="mt-10 grid gap-3 md:grid-cols-4">
-            {[
-              { n: "Free", p: "$0", d: ["50 build credits / mo", "architect.app subdomain", "Public repos"] },
-              { n: "Pro", p: "$25", d: ["500 credits", "Bring your own keys", "Private repos & custom domains"], hi: true },
-              { n: "Team", p: "$40/seat", d: ["Shared secrets & roles", "SSO", "Preview env per branch"] },
-              { n: "Enterprise", p: "Custom", d: ["VPC sandboxes", "Audit log & SLAs", "Lyzr Agent Runtime"] },
-            ].map((t) => (
-              <div key={t.n} className={`rounded-xl border p-5 ${t.hi ? "border-bp ring-4 ring-bp-50" : "border-line"}`}>
-                <div className="flex items-center justify-between">
-                  <h3 className="font-semibold">{t.n}</h3>
-                  {t.hi && <span className="label-mono text-bp">Popular</span>}
-                </div>
-                <p className="mt-2 text-2xl font-semibold tracking-tight">{t.p}</p>
-                <ul className="mt-4 space-y-1.5 text-[13px] text-ink-2">
-                  {t.d.map((x) => (
-                    <li key={x}>— {x}</li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+          <div className="mt-8">
+            <Pricing />
           </div>
         </div>
       </section>
@@ -208,7 +193,7 @@ export default function Landing() {
       <footer className="border-t border-line">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-4 px-5 py-8 text-[13px] text-ink-3">
           <Wordmark />
-          <span>A take-home concept for Lyzr — Architect 2.0.</span>
+          <span>A take-home concept for Lyzr: Architect 2.0.</span>
           <Link href="/architecture" className="ml-auto hover:text-ink">Technical architecture →</Link>
         </div>
       </footer>

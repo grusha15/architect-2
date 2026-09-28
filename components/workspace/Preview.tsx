@@ -140,7 +140,7 @@ function EmptyPreview() {
           <Monitor className="size-6 text-bp" />
         </div>
         <p className="mt-4 font-medium">Your app will appear here</p>
-        <p className="mt-1 text-[13px] text-ink-2">Once you approve the plan, you&apos;ll watch it being built — page by page, live.</p>
+        <p className="mt-1 text-[13px] text-ink-2">Once you approve the plan, you&apos;ll watch it being built, page by page, live.</p>
       </div>
     </div>
   );

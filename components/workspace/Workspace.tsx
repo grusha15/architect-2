@@ -20,10 +20,11 @@ import {
   Workflow,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
+import { attachmentContext } from "@/lib/attachments";
 import { buildSteps, type BuildStep } from "@/lib/build";
 import { FRAMEWORKS, MODELS, needsClarification } from "@/lib/planner";
 import { getProfile, uid, updateProject } from "@/lib/store";
-import type { ChatMessage, Checkpoint, Framework, Plan, PreviewState, Project, ProjectData, ViewMode } from "@/lib/types";
+import type { Attachment, ChatMessage, Checkpoint, Framework, Plan, PreviewState, Project, ProjectData, ViewMode } from "@/lib/types";
 import { GitHubIcon, Logo } from "../icons";
 import { Badge, Button, Segmented, timeAgo } from "../ui";
 import { useToast } from "../toast";
@@ -165,12 +166,12 @@ export function Workspace({ initial }: { initial: Project }) {
         const res = await fetch("/api/plan", {
           method: "POST",
           headers: { "content-type": "application/json" },
-          body: JSON.stringify({ prompt: latest.current.data.prompt, answers, model: latest.current.data.model, framework: answers.framework }),
+          body: JSON.stringify({ prompt: latest.current.data.prompt, answers, model: latest.current.data.model, framework: answers.framework, context: attachmentContext(latest.current.data.attachments) }),
         });
         const json = (await res.json()) as { plan: Plan; source: "llm" | "fallback" };
         updateData(() => ({ plan: json.plan, planSource: json.source, answers: { ...answers, done: "1" } }), { name: json.plan.name, status: "planning" });
       } catch {
-        toast("Couldn't reach the planner — retrying offline", "warn");
+        toast("Couldn't reach the planner, retrying offline", "warn");
       } finally {
         setPlanning(false);
       }
@@ -210,7 +211,7 @@ export function Workspace({ initial }: { initial: Project }) {
         id: uid(),
         role: "agent",
         at: now,
-        text: `**${plan!.name} is ready.** Try it in the preview — run the agents on the sample input, or click **Visual edit** to change anything by pointing at it.\n\nNext, you'll probably want to connect GitHub so the code is yours, and publish when you're happy.`,
+        text: `**${plan!.name} is ready.** Try it in the preview: run the agents on the sample input, or click **Visual edit** to change anything by pointing at it.\n\nNext, you'll probably want to connect GitHub so the code is yours, and publish when you're happy.`,
       };
       updateData((d) => ({ built: true, checkpoints: [...d.checkpoints, cp], messages: [...d.messages, msg] }), { status: "ready" });
       setBuilding(false);
@@ -247,8 +248,8 @@ export function Workspace({ initial }: { initial: Project }) {
     git: d.git ? { ...d.git, ahead: d.git.ahead + 1 } : null,
   });
 
-  const send = (text: string) => {
-    const userMsg: ChatMessage = { id: uid(), role: "user", text: selected ? `[${selected.label}] ${text}` : text, at: new Date().toISOString() };
+  const send = (text: string, attachments: Attachment[] = []) => {
+    const userMsg: ChatMessage = { id: uid(), role: "user", text: selected ? `[${selected.label}] ${text}` : text, at: new Date().toISOString(), attachments: attachments.length ? attachments : undefined };
     updateData((d) => ({ messages: [...d.messages, userMsg] }));
     setAgentBusy(true);
     const sel = selected;
@@ -256,11 +257,13 @@ export function Workspace({ initial }: { initial: Project }) {
     setEditMode(false);
     setTimeout(() => {
       const r = interpret(text, sel, latest.current.data.preview);
+      if (attachments.some((a) => a.kind === "image" || a.kind === "figma")) r.summary += ", using your attached design as the visual reference";
+      else if (attachments.some((a) => a.text)) r.summary += `, using the content of ${attachments.filter((a) => a.text).map((a) => a.name).join(", ")}`;
       const reply: ChatMessage = {
         id: uid(),
         role: "agent",
         at: new Date().toISOString(),
-        text: `Done — I ${r.summary}. Restore point saved, so you can undo this anytime.${detail === "technical" ? `\n\nChanged ${r.files.map((f) => `\`${f}\``).join(", ")} · typecheck ✓ · visual check ✓` : ""}`,
+        text: `Done. I ${r.summary}. Restore point saved, so you can undo this anytime.${detail === "technical" ? `\n\nChanged ${r.files.map((f) => `\`${f}\``).join(", ")} · typecheck ✓ · visual check ✓` : ""}`,
       };
       updateData((d) => ({ preview: r.preview, messages: [...d.messages, reply], ...addCheckpoint(d, text.slice(0, 60), r.preview, r.files.length) }));
       setLogs((l) => [...l, ...r.files.map((f) => `[edit] apply_patch ${f}`), "hmr: update applied"]);
@@ -403,6 +406,7 @@ export function Workspace({ initial }: { initial: Project }) {
         <div className={clsx("min-h-0 w-full shrink-0 border-r border-line md:block md:w-[360px] xl:w-[390px]", mobilePane === "chat" ? "block" : "hidden")}>
           <ChatPanel
             prompt={data.prompt}
+            promptAttachments={data.attachments}
             imported={data.source === "import"}
             phase={phase}
             plan={plan}

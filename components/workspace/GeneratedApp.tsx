@@ -16,19 +16,19 @@ export interface Revealed {
 export const ALL_REVEALED: Revealed = { shell: true, data: true, agent: true, pages: [0, 1, 2, 3, 4, 5] };
 
 const OUTPUTS: Record<string, string> = {
-  kyc: "Case #4821 — Passport and bank statement verified. Missing: proof of address (older than 90 days). Risk score 38 → routed to reviewer.",
-  support: "Ticket #1932 — Intent: refund · Urgency: high · Sentiment: frustrated. Drafted reply citing refund policy §3. VIP account → escalated to #support-leads.",
-  sales: "Lead: Sofia Rossi @ Globex — ICP fit 87/100. Hiring 12 ML engineers, raised Series B. Drafted a 3-step sequence referencing their data-platform launch.",
+  kyc: "Case #4821: Passport and bank statement verified. Missing: proof of address (older than 90 days). Risk score 38 → routed to reviewer.",
+  support: "Ticket #1932. Intent: refund · Urgency: high · Sentiment: frustrated. Drafted reply citing refund policy §3. VIP account → escalated to #support-leads.",
+  sales: "Lead: Sofia Rossi @ Globex: ICP fit 87/100. Hiring 12 ML engineers, raised Series B. Drafted a 3-step sequence referencing their data-platform launch.",
   recruiting: "Aarav Mehta → Senior Backend Engineer: match 91/100 (Go, distributed systems, 6 yrs). Interview booked Thu 14:00 with the panel.",
   research: "Weekly briefing ready: 3 competitors shipped agent features; pricing moved to usage-based at 2 of 3. 14 sources cited, confidence 0.82.",
-  finance: "INV-2231 from Northwind ($4,280) matched PO-889 and receipt. Duplicate of INV-2207 suspected — held for approval.",
-  generic: "Done — the workflow completed 3 steps in 4.2s. Output reviewed and passed guardrails.",
-  llm: "Done — the workflow completed every step and the reviewer approved the output.",
+  finance: "INV-2231 from Northwind ($4,280) matched PO-889 and receipt. Duplicate of INV-2207 suspected, so it's held for approval.",
+  generic: "Done. The workflow completed 3 steps in 4.2s. Output reviewed and passed guardrails.",
+  llm: "Done. The workflow completed every step and the reviewer approved the output.",
 };
 
 const SAMPLE_INPUT: Record<string, string> = {
   kyc: "passport_scan.pdf, bank_statement_aug.pdf",
-  support: "“I was charged twice and still no refund after 2 weeks. This is ridiculous.” — VIP customer",
+  support: "“I was charged twice and still no refund after 2 weeks. This is ridiculous.” (VIP customer)",
   sales: "New inbound: sofia.rossi@globex.com (demo request)",
   recruiting: "resume_aarav_mehta.pdf → Senior Backend Engineer",
   research: "Track: agent platforms, vibe-coding tools",

@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 700" width="1500" height="700" font-family="Inter, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+<defs>
+  <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4a4e5c"/></marker>
+  <style>
+    .h { font-size: 22px; font-weight: 700; fill: #14161f; }
+    .zone { font-family: 'JetBrains Mono', Menlo, monospace; font-size: 10.5px; letter-spacing: 1.2px; fill: #2747d6; font-weight: 600; }
+    .t { font-size: 14px; font-weight: 650; fill: #14161f; }
+    .s { font-size: 11.5px; fill: #4a4e5c; }
+    .s2 { font-size: 12px; fill: #14161f; }
+    .l { font-size: 10.5px; fill: #80838f; }
+    .n { font-size: 11px; font-weight: 700; fill: #fff; }
+  </style>
+</defs>
+<rect width="1500" height="700" fill="#ffffff"/>
+<text x="40" y="52" class="h">Architect 2.0: v1 architecture</text>
+<text x="40" y="76" class="s" fill="#4a4e5c">What we would ship first. One service we own, managed sandboxes, and existing hosts for user apps.</text>
+<rect x="40" y="130" width="190" height="110" rx="10" fill="#fff" stroke="#14161f" stroke-width="1.1"/>
+<text x="54" y="154" class="t">Builder / Developer</text>
+<text x="54" y="173" class="s">Browser: chat, preview,</text>
+<text x="54" y="189" class="s">code, agent studio</text>
+<rect x="40" y="470" width="190" height="64" rx="10" fill="#fff" stroke="#14161f" stroke-width="1.1"/>
+<text x="54" y="494" class="t">End users</text>
+<text x="54" y="513" class="s">People using the apps</text>
+<rect x="280" y="130" width="220" height="110" rx="10" fill="#fff" stroke="#14161f" stroke-width="1.1"/>
+<text x="294" y="154" class="t">Web app</text>
+<text x="294" y="173" class="s">Next.js on Vercel</text>
+<text x="294" y="189" class="s">chat, preview iframe,</text>
+<text x="294" y="205" class="s">editor, agent studio</text>
+<rect x="280" y="300" width="220" height="90" rx="10" fill="#fff" stroke="#14161f" stroke-width="1.1"/>
+<text x="294" y="324" class="t">Preview proxy</text>
+<text x="294" y="343" class="s">Cloudflare Worker</text>
+<text x="294" y="359" class="s">checks access, wakes sandbox</text>
+<rect x="575" y="130" width="285" height="300" rx="10" fill="#eef1fd" stroke="#2747d6" stroke-width="1.6"/>
+<text x="589" y="154" class="t">API + agent workers</text>
+<text x="589" y="173" class="s">One TypeScript service</text>
+<text x="589" y="189" class="s">(Cloud Run or Fly)</text>
+<text x="589" y="205" class="s"></text>
+<text x="589" y="221" class="s">REST + WebSocket to the browser</text>
+<text x="589" y="237" class="s">Job queue: one job per agent run</text>
+<text x="589" y="253" class="s">Agent loop: plan, act, verify, commit</text>
+<text x="589" y="269" class="s">Model gateway module (AI SDK / LiteLLM)</text>
+<text x="589" y="285" class="s">GitHub App + deploy clients</text>
+<text x="589" y="301" class="s">Run state saved in Postgres</text>
+<rect x="575" y="460" width="285" height="110" rx="14" fill="#f6f5f1" stroke="#cfcbbf" stroke-dasharray="5 4"/>
+<text x="591" y="482" class="zone">DATA</text>
+<rect x="590" y="488" width="80" height="64" rx="10" fill="#fff" stroke="#14161f" stroke-width="1.1"/>
+<text x="604" y="512" class="t">Postgres</text>
+<text x="604" y="531" class="s">Supabase</text>
+<rect x="678" y="488" width="80" height="64" rx="10" fill="#fff" stroke="#14161f" stroke-width="1.1"/>
+<text x="692" y="512" class="t">Redis</text>
+<text x="692" y="531" class="s">queue</text>
+<rect x="766" y="488" width="80" height="64" rx="10" fill="#fff" stroke="#14161f" stroke-width="1.1"/>
+<text x="780" y="512" class="t">Storage</text>
+<text x="780" y="531" class="s">S3 / R2</text>
+<rect x="920" y="130" width="250" height="170" rx="10" fill="#eef1fd" stroke="#2747d6" stroke-width="1.6"/>
+<text x="934" y="154" class="t">Sandbox provider (E2B)</text>
+<text x="934" y="173" class="s">Firecracker microVM per project</text>
+<text x="934" y="189" class="s">dev server :3000, agents :8000</text>
+<text x="934" y="205" class="s">the project's git repo</text>
+<text x="934" y="221" class="s">pauses when idle, resumes in ~1s</text>
+<text x="934" y="237" class="s">per-port preview URLs</text>
+<rect x="920" y="322" width="250" height="62" rx="10" fill="#fff" stroke="#14161f" stroke-width="1.1"/>
+<text x="934" y="346" class="t">LLM providers</text>
+<text x="934" y="365" class="s">Claude · GPT · Gemini · open-source</text>
+<rect x="920" y="402" width="250" height="56" rx="10" fill="#fff" stroke="#14161f" stroke-width="1.1"/>
+<text x="934" y="426" class="t">GitHub</text>
+<text x="934" y="445" class="s">repos, pull requests, webhooks</text>
+<rect x="1215" y="100" width="260" height="300" rx="14" fill="#f6f5f1" stroke="#cfcbbf" stroke-dasharray="5 4"/>
+<text x="1231" y="122" class="zone">USER APPS (DEPLOYED)</text>
+<rect x="1230" y="132" width="230" height="70" rx="10" fill="#fff" stroke="#14161f" stroke-width="1.1"/>
+<text x="1244" y="156" class="t">Vercel / Cloudflare</text>
+<text x="1244" y="175" class="s">front end of each app</text>
+<rect x="1230" y="215" width="230" height="70" rx="10" fill="#fff" stroke="#14161f" stroke-width="1.1"/>
+<text x="1244" y="239" class="t">Fly Machines / Cloud Run</text>
+<text x="1244" y="258" class="s">backend + agents, scale to zero</text>
+<rect x="1230" y="298" width="230" height="70" rx="10" fill="#fff" stroke="#14161f" stroke-width="1.1"/>
+<text x="1244" y="322" class="t">Neon / Supabase</text>
+<text x="1244" y="341" class="s">one Postgres per app</text>
+<path d="M230 185 H280" fill="none" stroke="#4a4e5c" stroke-width="1.6" marker-end="url(#arr)"/>
+<circle cx="255" cy="170" r="11" fill="#2747d6"/><text x="255" y="174" class="n" text-anchor="middle">1</text>
+<path d="M500 185 H575" fill="none" stroke="#4a4e5c" stroke-width="1.6" marker-end="url(#arr)"/>
+<text x="526" y="176" class="l">REST + WS</text>
+<path d="M860 205 H920" fill="none" stroke="#4a4e5c" stroke-width="1.6" marker-end="url(#arr)"/>
+<circle cx="890" cy="190" r="11" fill="#2747d6"/><text x="890" y="194" class="n" text-anchor="middle">2</text>
+<text x="866" y="224" class="l">exec, files</text>
+<path d="M860 353 H920" fill="none" stroke="#4a4e5c" stroke-width="1.6" marker-end="url(#arr)"/>
+<circle cx="890" cy="338" r="11" fill="#2747d6"/><text x="890" y="342" class="n" text-anchor="middle">3</text>
+<path d="M390 240 V300" fill="none" stroke="#2747d6" stroke-width="1.6" stroke-dasharray="4 4" marker-end="url(#arr)"/>
+<text x="398" y="276" class="l">iframe</text>
+<path d="M500 330 H518 V112 H1045 V130" fill="none" stroke="#2747d6" stroke-width="1.6" marker-end="url(#arr)"/>
+<circle cx="790" cy="112" r="11" fill="#2747d6"/><text x="790" y="116" class="n" text-anchor="middle">4</text>
+<path d="M860 430 H920" fill="none" stroke="#4a4e5c" stroke-width="1.6" marker-end="url(#arr)"/>
+<circle cx="890" cy="415" r="11" fill="#2747d6"/><text x="890" y="419" class="n" text-anchor="middle">5</text>
+<path d="M860 418 H872 V612 H1300 V400" fill="none" stroke="#4a4e5c" stroke-width="1.6" marker-end="url(#arr)"/>
+<circle cx="1100" cy="612" r="11" fill="#2747d6"/><text x="1100" y="616" class="n" text-anchor="middle">6</text>
+<path d="M230 502 H250 V640 H1400 V400" fill="none" stroke="#2747d6" stroke-width="1.6" marker-end="url(#arr)"/>
+<circle cx="820" cy="640" r="11" fill="#2747d6"/><text x="820" y="644" class="n" text-anchor="middle">7</text>
+<path d="M718 430 V488" fill="none" stroke="#4a4e5c" stroke-width="1.6" stroke-dasharray="4 4" marker-end="url(#arr)"/>
+<text x="920" y="480" class="s2">1  Prompt goes from the browser to the API</text>
+<text x="920" y="496" class="s2">2  A worker picks up the run and starts a sandbox</text>
+<text x="920" y="512" class="s2">3  The agent loop calls models through one gateway</text>
+<text x="920" y="528" class="s2">4  The proxy streams the live dev server to the preview</text>
+<text x="920" y="544" class="s2">5  Each verified change is a commit, pushed to GitHub</text>
+<text x="920" y="560" class="s2">6  Publish builds the app and deploys it to hosting</text>
+<text x="920" y="576" class="s2">7  End users open the app at its own URL</text>
+</svg>

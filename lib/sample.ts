@@ -18,7 +18,7 @@ export function sampleValue(field: string, i: number): string {
   if (f.includes("amount")) return `$${((i + 3) * 1379 % 9800 + 120).toLocaleString()}`;
   if (f.includes("score") || f.includes("confidence")) return `${(i * 17 + 41) % 59 + 40}`;
   if (f.includes("sentiment")) return ["Positive", "Neutral", "Frustrated", "Angry"][i % 4];
-  if (f.includes("missing")) return ["—", "Address proof", "—", "Signature", "Selfie"][i % 5];
+  if (f.includes("missing")) return ["None", "Address proof", "None", "Signature", "Selfie"][i % 5];
   if (f.includes("match")) return ["Matched", "Partial", "No PO"][i % 3];
   if (f.includes("tokens")) return `${(i * 311 + 900) % 4000}`;
   if (f.includes("sources")) return `${(i % 9) + 3}`;

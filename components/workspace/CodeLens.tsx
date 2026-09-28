@@ -266,12 +266,12 @@ function Terminal({ plan, files, branch }: { plan: Plan; files: GenFile[]; branc
           return ["============ test session starts ============", ...plan.agents.map((a) => `tests/test_${a.name.toLowerCase()}.py ....  [100%]`), `============ ${plan.agents.length * 4} passed in 1.9s ============`];
         case "pnpm":
           if (args[0] === "test") return ["✓ app/page.test.tsx (6 tests) 312ms", "Test Files  1 passed", "Tests  6 passed"];
-          if (args[0] === "dev") return ["▲ Next.js 15.5 — Local: http://localhost:3000 (already running, HMR attached)"];
+          if (args[0] === "dev") return ["▲ Next.js 15.5 · Local: http://localhost:3000 (already running, HMR attached)"];
           return [`pnpm ${args.join(" ")}: done`];
         case "env":
           return ["NODE_ENV=development", "PORT=3000", "ARCHITECT_SANDBOX=sbx_7f3a", "(secrets are injected by the egress proxy and never shown here)"];
         case "whoami":
-          return ["architect (uid 1000) — unprivileged user inside a Firecracker microVM"];
+          return ["architect (uid 1000), an unprivileged user inside a Firecracker microVM"];
         default:
           return [`bash: ${bin}: command not found (try "help")`];
       }

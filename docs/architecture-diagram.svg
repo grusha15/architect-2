@@ -12,7 +12,7 @@
   </style>
 </defs>
 <rect width="1600" height="1130" fill="#ffffff"/>
-<text x="40" y="50" class="h">Architect 2.0 — System Architecture</text>
+<text x="40" y="50" class="h">Architect 2.0: System Architecture</text>
 <text x="40" y="72" class="s" fill="#4a4e5c">Control plane on Kubernetes · untrusted code in Firecracker microVMs · one model gateway · Git as the source of truth · scale-to-zero app hosting</text>
 <rect x="40" y="120" width="200" height="62" rx="9" fill="#ffffff" stroke="#14161f" stroke-width="1.1"/>
 <text x="52" y="141" class="t" fill="#14161f">Builder</text>
@@ -138,7 +138,7 @@
 <rect x="1150" y="186" width="300" height="252" rx="10" fill="#fff" stroke="#2747d6" stroke-width="1.6"/>
 <text x="1162" y="206" class="t2" fill="#14161f">microVM · one per active project</text>
 <rect x="1166" y="218" width="268" height="42" rx="9" fill="#ffffff" stroke="#14161f" stroke-width="1.1"/>
-<text x="1178" y="239" class="t" fill="#14161f">envd — exec · fs · pty API (gRPC)</text>
+<text x="1178" y="239" class="t" fill="#14161f">envd: exec · fs · pty API (gRPC)</text>
 <rect x="1166" y="268" width="130" height="56" rx="9" fill="#ffffff" stroke="#14161f" stroke-width="1.1"/>
 <text x="1178" y="289" class="t" fill="#14161f">Dev server :3000</text>
 <text x="1178" y="306" class="s" fill="#4a4e5c">Next/Vite + HMR</text>
@@ -192,7 +192,7 @@
 <text x="1372" y="793" class="t" fill="#14161f">Image registry</text>
 <text x="1372" y="810" class="s" fill="#4a4e5c">immutable, signed images</text>
 <rect x="1150" y="850" width="400" height="80" rx="9" fill="#eef1fd" stroke="#2747d6" stroke-width="1.6"/>
-<text x="1162" y="871" class="t" fill="#14161f">App hosting — Knative on K8s (or Cloud Run)</text>
+<text x="1162" y="871" class="t" fill="#14161f">App hosting: Knative on K8s (or Cloud Run)</text>
 <text x="1162" y="888" class="s" fill="#4a4e5c">revision per deploy · scale-to-zero · min/max instances</text>
 <text x="1162" y="902" class="s" fill="#4a4e5c">preview environment per branch · instant rollback</text>
 <rect x="1150" y="948" width="190" height="70" rx="9" fill="#ffffff" stroke="#14161f" stroke-width="1.1"/>

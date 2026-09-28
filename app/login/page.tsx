@@ -56,7 +56,7 @@ function Login() {
 
   return (
     <div className="grid min-h-screen lg:grid-cols-[1.05fr_1fr]">
-      {/* Left: context — keep the user's intent visible */}
+      {/* Left: context, keeps the user's intent visible */}
       <aside className="bp-grid relative hidden flex-col justify-between border-r border-line p-10 lg:flex">
         <Link href="/"><Wordmark /></Link>
         <div className="max-w-md">
@@ -69,7 +69,7 @@ function Login() {
                   {pendingPrompt}
                 </p>
               </div>
-              <p className="mt-4 text-[14px] text-ink-2">Sign in and we&apos;ll draft a plan for it straight away — nothing gets built until you approve it.</p>
+              <p className="mt-4 text-[14px] text-ink-2">Sign in and we&apos;ll draft a plan for it straight away. Nothing gets built until you approve it.</p>
             </>
           ) : (
             <>
@@ -122,7 +122,7 @@ function Login() {
                   <Mail className="size-4" /> Email me a magic link
                 </Button>
               </form>
-              <p className="mt-3 text-center text-[12px] text-ink-3">Work at a company with SSO? <button className="underline hover:text-ink" onClick={() => setError("SSO (SAML/OIDC) is available on the Enterprise plan — ask your admin for the workspace URL.")}>Use SSO</button></p>
+              <p className="mt-3 text-center text-[12px] text-ink-3">Work at a company with SSO? <button className="underline hover:text-ink" onClick={() => setError("SSO (SAML/OIDC) is available on the Enterprise plan. Ask your admin for the workspace URL.")}>Use SSO</button></p>
             </>
           )}
 

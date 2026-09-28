@@ -159,7 +159,7 @@ export function generateFiles(plan: Plan): GenFile[] {
     {
       path: "PLAN.md",
       language: "markdown",
-      content: `# ${plan.name}\n\n${plan.summary}\n\n## Pages\n${plan.pages.map((p) => `- **${p.name}** — ${p.description}`).join("\n")}\n\n## Agents (${plan.framework})\n${plan.agents.map((a) => `- **${a.name}** (${a.model}) — ${a.role}`).join("\n")}\n\n## Data\n${plan.data.map((d) => `- ${d.entity}: ${d.fields.join(", ")}`).join("\n")}\n\n## Integrations\n${plan.integrations.map((i) => `- ${i}`).join("\n")}\n`,
+      content: `# ${plan.name}\n\n${plan.summary}\n\n## Pages\n${plan.pages.map((p) => `- **${p.name}**: ${p.description}`).join("\n")}\n\n## Agents (${plan.framework})\n${plan.agents.map((a) => `- **${a.name}** (${a.model}): ${a.role}`).join("\n")}\n\n## Data\n${plan.data.map((d) => `- ${d.entity}: ${d.fields.join(", ")}`).join("\n")}\n\n## Integrations\n${plan.integrations.map((i) => `- ${i}`).join("\n")}\n`,
     },
     {
       path: "architect.toml",

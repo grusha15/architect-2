@@ -11,7 +11,7 @@ import { saveProfile } from "@/lib/store";
 import type { Role, ViewMode } from "@/lib/types";
 
 const ROLES: { id: Role; title: string; body: string; icon: typeof Code2; view: ViewMode; perks: string[] }[] = [
-  { id: "builder", title: "I describe, Architect builds", body: "I don't write code — I want a working tool.", icon: MonitorPlay, view: "preview", perks: ["Opens in Preview lens", "Plain-English progress", "Guided connections"] },
+  { id: "builder", title: "I describe, Architect builds", body: "I don't write code. I want a working tool.", icon: MonitorPlay, view: "preview", perks: ["Opens in Preview lens", "Plain-English progress", "Guided connections"] },
   { id: "developer", title: "I write code, AI helps", body: "I want control: diffs, terminal, my repo.", icon: Code2, view: "code", perks: ["Opens in Code lens", "Tool calls visible", "GitHub-first flows"] },
   { id: "both", title: "A bit of both", body: "I prototype, then go deeper when needed.", icon: Layers, view: "preview", perks: ["Preview lens, Code one click away", "Technical details on demand"] },
 ];

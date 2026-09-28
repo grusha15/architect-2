@@ -80,7 +80,7 @@ export function DeployModal({
       `Provisioning ${env} database branch (Neon) … done`,
       "Injecting secrets from vault … done",
       "Creating revision rev-0007 (min 0 · max 20 instances)",
-      "Health check passed — shifting traffic 0% → 100%",
+      "Health check passed, shifting traffic 0% → 100%",
     ];
     for (const l of lines) {
       await new Promise((r) => setTimeout(r, 480));

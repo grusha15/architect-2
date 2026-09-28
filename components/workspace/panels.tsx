@@ -137,11 +137,11 @@ export function GitPanel({
         <div className="text-center">
           <span className="mx-auto grid size-11 place-items-center rounded-xl bg-ink text-white"><GitHubIcon className="size-5" /></span>
           <p className="mt-3 font-semibold">Back up and own your code</p>
-          <p className="mt-1 text-[12.5px] text-ink-2">Every restore point becomes a commit. Developers can clone, review and open PRs — nothing is locked in.</p>
+          <p className="mt-1 text-[12.5px] text-ink-2">Every restore point becomes a commit. Developers can clone, review and open PRs. Nothing is locked in.</p>
           <Button variant="dark" className="mt-4 w-full" onClick={() => setAuthOpen(true)}><GitHubIcon className="size-4" /> Connect GitHub</Button>
           <ul className="mt-4 space-y-1.5 text-left text-[12px] text-ink-2">
             <li className="flex gap-2"><Check className="size-3.5 shrink-0 text-ok" /> Fine-grained access to only the repos you pick</li>
-            <li className="flex gap-2"><Check className="size-3.5 shrink-0 text-ok" /> Architect works on branches — never force-pushes main</li>
+            <li className="flex gap-2"><Check className="size-3.5 shrink-0 text-ok" /> Architect works on branches and never force-pushes main</li>
             <li className="flex gap-2"><Check className="size-3.5 shrink-0 text-ok" /> Pushes from your laptop sync back here</li>
           </ul>
           <Modal open={authOpen} onClose={() => setAuthOpen(false)} title="Authorize Architect" subtitle="github.com/apps/architect-dev">
@@ -159,7 +159,7 @@ export function GitPanel({
                 <Button variant="ghost" onClick={() => setAuthOpen(false)}>Cancel</Button>
                 <Button variant="dark" onClick={() => { setAuthorized(true); setAuthOpen(false); toast("GitHub App installed on acme"); }}>Install & authorize</Button>
               </div>
-              <p className="text-[11.5px] text-ink-3">Tip: sign in with GitHub to use your real account — repos get created and pushed for real.</p>
+              <p className="text-[11.5px] text-ink-3">Tip: sign in with GitHub to use your real account. Repos get created and pushed for real.</p>
             </div>
           </Modal>
         </div>
@@ -196,7 +196,7 @@ export function GitPanel({
                 <GitHubIcon className="size-3.5 text-ink-3" /> {r}
               </button>
             ))}
-            <p className="text-[11.5px] text-ink-3">Linking an existing repo creates a new branch — your main branch is untouched.</p>
+            <p className="text-[11.5px] text-ink-3">Linking an existing repo creates a new branch. Your main branch is untouched.</p>
           </div>
         )}
       </div>
@@ -298,7 +298,7 @@ export function GitPanel({
 }
 
 function PrModal({ open, onClose, git, plan, onCreate }: { open: boolean; onClose: () => void; git: GitState; plan: Plan; onCreate: (t: string) => void }) {
-  const [title, setTitle] = useState(`feat: ${plan.name} — agent workflow and UI`);
+  const [title, setTitle] = useState(`feat: ${plan.name} agent workflow and UI`);
   const body = `## What\n${plan.summary}\n\n## Changes\n${plan.pages.map((p) => `- ${p.name} page`).join("\n")}\n${plan.agents.map((a) => `- ${a.name} agent (${a.model})`).join("\n")}\n\n## Verification\n- ✅ typecheck, 12 unit tests, visual check\n- ✅ evals 4/5 (80%)\n\n_Opened from Architect_`;
   return (
     <Modal open={open} onClose={onClose} title="Open a pull request" subtitle={`${git.branch} → main · ${git.repo}`} width="max-w-xl">
@@ -346,7 +346,7 @@ export function SecretsPanel({ plan, secrets, onChange, toast }: { plan: Plan; s
           <span className="font-medium">LLM access</span>
           <Toggle on={useCredits} onChange={setUseCredits} label="Use Architect credits" />
         </div>
-        <p className="mt-1 text-[12px] text-ink-2">{useCredits ? "Your agents use Architect credits — no API keys needed." : "Bring your own keys: add ANTHROPIC_API_KEY, OPENAI_API_KEY or GEMINI_API_KEY below."}</p>
+        <p className="mt-1 text-[12px] text-ink-2">{useCredits ? "Your agents use Architect credits. No API keys needed." : "Bring your own keys: add ANTHROPIC_API_KEY, OPENAI_API_KEY or GEMINI_API_KEY below."}</p>
       </div>
 
       {missing.length > 0 && (
@@ -389,7 +389,7 @@ export function SecretsPanel({ plan, secrets, onChange, toast }: { plan: Plan; s
         <input className={inputCls + " font-mono text-[12.5px]"} placeholder="KEY_NAME" value={missing.includes(key) ? "" : key} onChange={(e) => setKey(e.target.value.toUpperCase().replace(/[^A-Z0-9_]/g, "_"))} />
         <input className={inputCls + " font-mono text-[12.5px]"} type="password" placeholder="value" value={missing.includes(key) ? "" : value} onChange={(e) => setValue(e.target.value)} />
         <Button className="w-full" onClick={() => save()} loading={checking && !missing.includes(key)} disabled={!key || !value || missing.includes(key)}><Plus className="size-3.5" /> Add to vault</Button>
-        <p className="text-[11.5px] leading-snug text-ink-3">Encrypted with a per-workspace KMS key. Injected at runtime by the egress proxy — never written to your repo, logs, or the chat. Only the last 4 characters are stored here.</p>
+        <p className="text-[11.5px] leading-snug text-ink-3">Encrypted with a per-workspace KMS key. Injected at runtime by the egress proxy and never written to your repo, logs, or the chat. Only the last 4 characters are stored here.</p>
       </div>
     </div>
   );
@@ -580,7 +580,7 @@ export function DeployPanel({ deployments, onDeploy, onRollback, built }: { depl
       <div>
         <p className="label-mono text-ink-3">History</p>
         {deployments.length === 0 ? (
-          <p className="mt-1.5 text-[12.5px] text-ink-2">Each deploy is an immutable build — roll back to any of them in one click.</p>
+          <p className="mt-1.5 text-[12.5px] text-ink-2">Each deploy is an immutable build. Roll back to any of them in one click.</p>
         ) : (
           <ul className="mt-2 space-y-1.5">
             {[...deployments].reverse().map((d) => (

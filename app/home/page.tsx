@@ -12,6 +12,7 @@ import { useToast } from "@/components/toast";
 import { useAuth } from "@/lib/auth";
 import { FRAMEWORKS, TEMPLATES } from "@/lib/planner";
 import { startProject } from "@/lib/start";
+import { planById, setPlan, takePendingPlan } from "@/lib/plan";
 import { deleteProject, listProjects } from "@/lib/store";
 import type { Framework, Project } from "@/lib/types";
 
@@ -43,6 +44,15 @@ function Home() {
   const [blankOpen, setBlankOpen] = useState(false);
 
   useEffect(() => {
+    if (!user) return;
+    const pending = takePendingPlan();
+    if (pending && pending !== "free" && pending !== "enterprise") {
+      setPlan(user.id, pending);
+      toast(`You're on ${planById(pending).name}`);
+    }
+  }, [user, toast]);
+
+  useEffect(() => {
     listProjects()
       .then(setProjects)
       .catch((e) => {
@@ -63,7 +73,7 @@ function Home() {
 
   const build = async (v: ComposerSubmit) => {
     setBusy(true);
-    const id = await startProject({ prompt: v.prompt, source: "prompt", framework: v.framework, model: v.model });
+    const id = await startProject({ prompt: v.prompt, source: "prompt", framework: v.framework, model: v.model, attachments: v.attachments });
     router.push(`/p/${id}`);
   };
 
@@ -82,7 +92,7 @@ function Home() {
       </div>
 
       <div className="mt-4 grid gap-3 sm:grid-cols-3">
-        <StartCard icon={<GitHubIcon className="size-[18px]" />} title="Import from GitHub" body="Bring an existing repo — we detect the stack and boot it." onClick={() => router.push("/import")} />
+        <StartCard icon={<GitHubIcon className="size-[18px]" />} title="Import from GitHub" body="Bring an existing repo. We detect the stack and boot it." onClick={() => router.push("/import")} />
         <StartCard icon={<Boxes className="size-[18px]" />} title="Start from a template" body="Proven agent apps you can remix in minutes." onClick={() => document.getElementById("templates")?.scrollIntoView({ behavior: "smooth" })} />
         <StartCard icon={<FilePlus2 className="size-[18px]" />} title="Blank project" body="Pick a framework and start in the Code lens." onClick={() => setBlankOpen(true)} />
       </div>
@@ -145,7 +155,7 @@ function Home() {
       {/* Templates */}
       <section id="templates" className="mt-14 scroll-mt-6">
         <h2 className="text-[16px] font-semibold">Templates</h2>
-        <p className="mt-0.5 text-[13.5px] text-ink-2">Each one is a complete agent app with a different framework — a good way to see how Architect handles each.</p>
+        <p className="mt-0.5 text-[13.5px] text-ink-2">Each one is a complete agent app with a different framework, so it's a quick way to see how Architect handles each.</p>
         <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {TEMPLATES.map((t) => (
             <button
@@ -237,7 +247,7 @@ function ProjectCard({ p, onOpen, onDelete }: { p: Project; onOpen: () => void; 
             <h3 className="flex-1 truncate text-[14px] font-semibold">{p.name}</h3>
             <Badge tone={STATUS[p.status].tone}>{STATUS[p.status].label}</Badge>
           </div>
-          <p className="mt-1 line-clamp-1 text-[12.5px] text-ink-3">{p.data.plan?.summary ?? p.data.prompt ?? "—"}</p>
+          <p className="mt-1 line-clamp-1 text-[12.5px] text-ink-3">{p.data.plan?.summary ?? p.data.prompt ?? ""}</p>
           <p className="mt-2 text-[11.5px] text-ink-3">Edited {timeAgo(p.updated_at)}</p>
         </div>
       </button>

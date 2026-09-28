@@ -91,7 +91,7 @@ export function buildSteps(plan: Plan): BuildStep[] {
     {
       id: "fix",
       kind: "fix",
-      title: "Found a small bug — fixed it automatically",
+      title: "Found a small bug and fixed it automatically",
       calls: ["self_heal attempt 1/3 (error signature e3b0c4)", `apply_patch ${entryFor(plan.framework)} (+2 −1)`, "run_command pnpm typecheck  ✓"],
       ms: 1200,
     },

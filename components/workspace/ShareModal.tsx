@@ -18,7 +18,7 @@ export function ShareModal({ open, onClose, projectName, owner }: { open: boolea
   const [copied, setCopied] = useState(false);
 
   return (
-    <Modal open={open} onClose={onClose} title={`Share ${projectName}`} subtitle="Invite teammates to the same project — builders and developers work on one source of truth.">
+    <Modal open={open} onClose={onClose} title={`Share ${projectName}`} subtitle="Invite teammates to the same project. Builders and developers work on one source of truth.">
       <form
         className="flex gap-2"
         onSubmit={(e) => {
@@ -55,7 +55,7 @@ export function ShareModal({ open, onClose, projectName, owner }: { open: boolea
         <Link2 className="size-4 text-ink-3" />
         <span className="flex-1 text-[13px]">
           <span className="font-medium">Anyone with the link can view the preview</span>
-          <span className="block text-[12px] text-ink-3">Great for quick feedback — viewers can&apos;t edit.</span>
+          <span className="block text-[12px] text-ink-3">Great for quick feedback. Viewers can&apos;t edit.</span>
         </span>
         <Toggle on={linkOn} onChange={setLinkOn} label="Link sharing" />
       </div>

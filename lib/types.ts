@@ -62,11 +62,24 @@ export interface Deployment {
   status: "live" | "superseded" | "rolled-back";
 }
 
+export interface Attachment {
+  id: string;
+  name: string;
+  kind: "file" | "image" | "figma";
+  size?: number;
+  /** Small JPEG thumbnail (data URL) for images */
+  preview?: string;
+  /** Extracted text for text-like files (truncated) */
+  text?: string;
+  url?: string;
+}
+
 export interface ChatMessage {
   id: string;
   role: "user" | "agent" | "system";
   text: string;
   at: string;
+  attachments?: Attachment[];
 }
 
 export interface GitState {
@@ -88,6 +101,7 @@ export type ProjectStatus = "draft" | "planning" | "building" | "ready" | "live"
 
 export interface ProjectData {
   prompt: string;
+  attachments?: Attachment[];
   source: "prompt" | "import" | "template" | "blank";
   model: string;
   plan: Plan | null;

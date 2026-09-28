@@ -5,7 +5,7 @@ A vibe-coding platform for **builders and developers** to create, import, iterat
 - **Live app:** https://architect-2-eight.vercel.app
 - **Repo:** https://github.com/grusha15/architect-2
 - **Architecture write-up:** [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
-- **Architecture diagram:** [`docs/architecture-diagram.svg`](docs/architecture-diagram.svg) (also at `/architecture` in the app)
+- **Architecture diagrams:** [`docs/architecture-v1.svg`](docs/architecture-v1.svg) (what we ship first) and [`docs/architecture-diagram.svg`](docs/architecture-diagram.svg) (target at scale), also at `/architecture` in the app
 
 ---
 
@@ -44,6 +44,7 @@ Most tools force a handoff: you prototype in one place and rebuild in another. A
 | Google / GitHub / email auth (Supabase) | Sandbox execution and HMR |
 | Postgres persistence with RLS (projects, plans, checkpoints, deployments, profiles) | Build steps, terminal, evals, traces |
 | LLM plan generation through a model gateway (Anthropic / OpenAI / Gemini, with offline fallback) | Deploy pipeline (the deployed page itself is real and public) |
+| File, image and Figma-link attachments (text files are passed to the planner) | Checkout (plan selection works, no payment) |
 | GitHub: list your repos; create a repo and push generated code | PRs, OAuth for third-party integrations |
 
 With no environment variables, the app runs fully in **demo mode** (local accounts, browser storage), so every flow can still be clicked through.

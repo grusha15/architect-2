@@ -8,6 +8,7 @@ import { BookOpen, ChevronsUpDown, House, LayoutTemplate, LogOut, Menu, Rocket, 
 import { GitHubIcon, Wordmark } from "./icons";
 import { Avatar } from "./ui";
 import { useRequireUser } from "@/lib/useRequireUser";
+import { planById, usePlan } from "@/lib/plan";
 
 const NAV = [
   { href: "/home", label: "Home", icon: House },
@@ -23,6 +24,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const path = usePathname();
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const planId = usePlan(user?.id);
+  const plan = planById(planId);
 
   if (loading || !user) return <div className="min-h-screen" />;
 
@@ -35,7 +38,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <span className="grid size-6 place-items-center rounded-md bg-ink text-[11px] font-semibold text-white">{user.name[0]?.toUpperCase()}</span>
         <span className="min-w-0 flex-1">
           <span className="block truncate text-[13px] font-medium">{user.name.split(" ")[0]}&apos;s workspace</span>
-          <span className="block text-[11px] text-ink-3">Free plan</span>
+          <span className="block text-[11px] text-ink-3">{plan.name} plan</span>
         </span>
         <ChevronsUpDown className="size-3.5 text-ink-3" />
       </button>
@@ -58,12 +61,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <div className="rounded-lg border border-line bg-surface p-3">
           <div className="flex items-center justify-between text-[12px]">
             <span className="font-medium">Build credits</span>
-            <span className="font-mono text-ink-3">38 / 50</span>
+            <span className="font-mono text-ink-3">{plan.credits ? `12 / ${plan.credits.toLocaleString()}` : "Unlimited"}</span>
           </div>
           <div className="mt-2 h-1.5 rounded-full bg-sunken">
-            <div className="h-full w-[76%] rounded-full bg-bp" />
+            <div className="h-full rounded-full bg-bp" style={{ width: plan.credits ? `${Math.max(2, (12 / plan.credits) * 100)}%` : "4%" }} />
           </div>
-          <button onClick={() => router.push("/settings?tab=billing")} className="mt-2 text-[12px] font-medium text-bp hover:underline">Upgrade for more</button>
+          <button onClick={() => router.push("/settings?tab=billing")} className="mt-2 text-[12px] font-medium text-bp hover:underline">{planId === "free" ? "Upgrade for more" : "Manage plan"}</button>
         </div>
         {mode === "demo" && <p className="rounded-md bg-warn-50 px-2 py-1.5 text-[11.5px] text-warn">Demo mode · data stays in this browser</p>}
         <div className="flex items-center gap-2 px-1">

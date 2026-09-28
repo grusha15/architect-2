@@ -2,11 +2,43 @@
 
 > How I would build Architect 2.0 for real: a vibe-coding platform where builders **and** developers create, import, iterate on and deploy agentic applications.
 >
-> Diagram: [`architecture-diagram.svg`](./architecture-diagram.svg) (also served live at `/architecture`).
+> Two diagrams: [`architecture-v1.svg`](./architecture-v1.svg) (what we ship first) and [`architecture-diagram.svg`](./architecture-diagram.svg) (the target at scale). Both are also served at `/architecture`.
 
 ---
 
-## 0. TL;DR
+## Start here: the v1 architecture
+
+Most products in this space pair a managed sandbox with one agent service and deploy user apps to hosts that already exist. Architect 2.0 should start the same way. The rest of this document describes the target design at scale; every heavier piece in it has a trigger for when it's worth adding (see the table at the end of this section).
+
+![v1 architecture](./architecture-v1.png)
+
+| Part | v1 choice | Buy or build | Why |
+|---|---|---|---|
+| Sandboxes | **E2B** (managed Firecracker microVMs), one per active project, paused when idle | Buy | AI-written code is untrusted and agent frameworks need real Linux and Python. Managed sandboxes give that in days |
+| Agent loop | Job queue (Redis/BullMQ or Inngest) inside **one TypeScript API service**. Each run: plan, act, verify, commit. Run state checkpointed in Postgres | Build | This is the product; one service keeps it easy to change |
+| Models | Gateway **module** in the API (Vercel AI SDK or LiteLLM), one canonical message and tool format | Build (thin) | Switching Claude, GPT, Gemini or open-source is a setting |
+| Live preview | The sandbox's per-port URL behind a small **Cloudflare Worker** proxy | Build (small) | Access checks, wake-on-request, previews on their own domain |
+| Realtime | WebSocket from the API, Redis pub/sub between workers | Build | Timeline, logs and terminal stream to the browser |
+| GitHub | **GitHub App**, short-lived tokens, webhooks; every agent turn is a commit on a branch | Build | Git is the source of truth: undo, export, PRs, no lock-in |
+| User app hosting | Front ends on **Vercel/Cloudflare**; backends and agents on **Fly Machines or Cloud Run**; **Neon** Postgres per app | Buy | Scale-to-zero and rollback already exist |
+| Architect itself | Web app on Vercel; API + workers on Cloud Run; Supabase Postgres, Redis, S3 | Buy | Few moving parts for a small team |
+
+**Prompt to live app in v1:** (1) the browser sends the prompt to the API; (2) a worker picks up the run and starts a sandbox; (3) the agent loop calls models through the gateway module, and tool calls run in the sandbox; (4) the proxy streams the live dev server to the preview iframe; (5) each verified change is a commit pushed to GitHub; (6) Publish builds the app and deploys it to hosting; (7) end users open it at its own URL.
+
+**When to add the heavier pieces:**
+
+| When this happens | Add this (described below) |
+|---|---|
+| Agent runs last hours and wait on people | Temporal durable workflows (Section 5.5) |
+| The sandbox bill becomes a top-3 cost, or enterprise needs VPC | Self-hosted Firecracker behind the same sandbox interface (Section 4) |
+| Teams need spend caps, BYOK and per-app metering | The model gateway as its own service (Section 6) |
+| Thousands of deployed apps and hosting margin matters | Our own scale-to-zero cluster, Knative (Section 9) |
+| Agent traces and usage outgrow Postgres | ClickHouse (Section 11) |
+| One region is saturated or customers need data residency | Regional cells (Section 11) |
+
+---
+
+## 0. Target architecture at scale (TL;DR)
 
 | Concern | Decision | One-line reason |
 |---|---|---|
@@ -101,7 +133,7 @@ Every step emits `step.started`, `tool.called`, `file.changed` and `step.done` t
 
 ### 4.3 Inside a sandbox
 ```
-microVM (2 vCPU, 4 GB, 10 GB disk — tier-dependent)
+microVM (2 vCPU, 4 GB, 10 GB disk, depending on tier)
 ├── envd            gRPC agent over vsock: exec, fs (read/write/watch), pty, port list
 ├── /workspace      the project's git repo (persistent volume or snapshot)
 ├── dev server      :3000  Next.js / Vite with HMR
@@ -342,12 +374,12 @@ usage_events(ts, workspace_id, project_id, kind, tokens, cost)  -- ClickHouse
 | Component | v1 | Later | Why |
 |---|---|---|---|
 | Sandboxes | **Buy** (E2B) | Build (self-hosted Firecracker) | Speed to market now; margin at scale |
-| Workflow engine | **Buy** (Temporal Cloud) | — | Durability is hard to get right |
-| Model Gateway | **Build** (on LiteLLM ideas) | — | Routing, metering and prompt packs are our moat |
-| Agent harness | **Build** | — | This *is* the product |
-| App hosting | **Build on** Knative/EKS | — | Control of cost and rollback semantics |
-| Database per app | **Buy** (Neon) | — | Branching + scale-to-zero out of the box |
-| Auth | **Buy** (Supabase Auth / WorkOS for SSO) | — | Commodity |
+| Workflow engine | **Buy** (Temporal Cloud) | same | Durability is hard to get right |
+| Model Gateway | **Build** (on LiteLLM ideas) | same | Routing, metering and prompt packs are our moat |
+| Agent harness | **Build** | same | This *is* the product |
+| App hosting | **Build on** Knative/EKS | same | Control of cost and rollback semantics |
+| Database per app | **Buy** (Neon) | same | Branching + scale-to-zero out of the box |
+| Auth | **Buy** (Supabase Auth / WorkOS for SSO) | same | Commodity |
 
 ---
 

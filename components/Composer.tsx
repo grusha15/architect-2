@@ -1,16 +1,19 @@
 "use client";
 
 import clsx from "clsx";
-import { ArrowUp, ChevronDown, Image as ImageIcon, Paperclip, Sparkles, Wand2 } from "lucide-react";
+import { ArrowUp, ChevronDown, Image as ImageIcon, Paperclip, Sparkles, Wand2, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { FigmaIcon } from "./icons";
 import { FRAMEWORKS, MODELS } from "@/lib/planner";
-import type { Framework } from "@/lib/types";
+import type { Attachment, Framework } from "@/lib/types";
+import { FILE_ACCEPT, figmaAttachment, readFiles } from "@/lib/attachments";
+import { AttachmentChips } from "./Attachments";
 
 export interface ComposerSubmit {
   prompt: string;
   framework?: Framework;
   model: string;
+  attachments: Attachment[];
 }
 
 /** The prompt composer used on the landing page and the dashboard. */
@@ -32,7 +35,32 @@ export function Composer({
   const [text, setText] = useState(initial);
   const [framework, setFramework] = useState<Framework | "auto">("auto");
   const [model, setModel] = useState("auto");
-  const [attach, setAttach] = useState<string[]>([]);
+  const [attach, setAttach] = useState<Attachment[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [figmaOpen, setFigmaOpen] = useState(false);
+  const [figmaUrl, setFigmaUrl] = useState("");
+  const [dragging, setDragging] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const imageRef = useRef<HTMLInputElement>(null);
+
+  const addFiles = async (files: FileList | File[] | null) => {
+    if (!files || !files.length) return;
+    const { items, errors } = await readFiles(files, attach.length);
+    setAttach((s) => [...s, ...items]);
+    setError(errors[0] ?? null);
+  };
+
+  const addFigma = () => {
+    const a = figmaAttachment(figmaUrl);
+    if (!a) {
+      setError("That doesn't look like a Figma link (figma.com/design/… or /file/…).");
+      return;
+    }
+    setAttach((s) => [...s, a]);
+    setFigmaUrl("");
+    setFigmaOpen(false);
+    setError(null);
+  };
   const [enhancing, setEnhancing] = useState(false);
   const ref = useRef<HTMLTextAreaElement>(null);
 
@@ -48,7 +76,7 @@ export function Composer({
 
   const submit = () => {
     if (!text.trim() || busy) return;
-    onSubmit({ prompt: text.trim(), framework: framework === "auto" ? undefined : framework, model });
+    onSubmit({ prompt: text.trim(), framework: framework === "auto" ? undefined : framework, model, attachments: attach });
   };
 
   const enhance = () => {
@@ -65,17 +93,28 @@ export function Composer({
   };
 
   return (
-    <div className="rounded-2xl border border-line-strong bg-surface shadow-[0_1px_0_rgba(20,22,31,0.04),0_12px_40px_-16px_rgba(39,71,214,0.25)] focus-within:border-bp">
+    <div
+      className={clsx(
+        "relative rounded-2xl border bg-surface shadow-[0_1px_0_rgba(20,22,31,0.04),0_12px_40px_-16px_rgba(39,71,214,0.25)] focus-within:border-bp",
+        dragging ? "border-bp ring-4 ring-bp-50" : "border-line-strong",
+      )}
+      onDragOver={(e) => {
+        e.preventDefault();
+        setDragging(true);
+      }}
+      onDragLeave={() => setDragging(false)}
+      onDrop={(e) => {
+        e.preventDefault();
+        setDragging(false);
+        addFiles(e.dataTransfer.files);
+      }}
+    >
+      <input ref={fileRef} type="file" multiple accept={FILE_ACCEPT} className="hidden" onChange={(e) => { addFiles(e.target.files); e.target.value = ""; }} />
+      <input ref={imageRef} type="file" multiple accept="image/*" className="hidden" onChange={(e) => { addFiles(e.target.files); e.target.value = ""; }} />
+      {dragging && <div className="pointer-events-none absolute inset-0 z-10 grid place-items-center rounded-2xl bg-bp-50/80 text-[13.5px] font-medium text-bp">Drop files to attach</div>}
       {attach.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 px-4 pt-3">
-          {attach.map((a) => (
-            <span key={a} className="flex items-center gap-1 rounded-md bg-sunken px-2 py-1 text-[12px] text-ink-2">
-              {a}
-              <button className="text-ink-3 hover:text-ink" onClick={() => setAttach((s) => s.filter((x) => x !== a))} aria-label={`Remove ${a}`}>
-                ×
-              </button>
-            </span>
-          ))}
+        <div className="px-3 pt-3">
+          <AttachmentChips items={attach} onRemove={(id) => setAttach((s) => s.filter((x) => x.id !== id))} />
         </div>
       )}
       <textarea
@@ -83,6 +122,13 @@ export function Composer({
         value={text}
         autoFocus={autoFocus}
         onChange={(e) => setText(e.target.value)}
+        onPaste={(e) => {
+          const files = Array.from(e.clipboardData.files);
+          if (files.length) {
+            e.preventDefault();
+            addFiles(files);
+          }
+        }}
         onKeyDown={(e) => {
           if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
@@ -94,15 +140,36 @@ export function Composer({
         className={clsx("w-full resize-none bg-transparent px-4 pt-4 outline-none placeholder:text-ink-3", size === "lg" ? "min-h-[84px] text-[16px]" : "min-h-[64px] text-[15px]")}
       />
       <div className="flex flex-wrap items-center gap-1 px-2.5 pb-2.5">
-        <IconBtn label="Attach files" onClick={() => setAttach((s) => [...new Set([...s, "requirements.pdf"])])}>
+        <IconBtn label="Attach files (PDF, docs, CSV, code)" onClick={() => fileRef.current?.click()}>
           <Paperclip className="size-4" />
         </IconBtn>
-        <IconBtn label="Add a screenshot" onClick={() => setAttach((s) => [...new Set([...s, "dashboard-mock.png"])])}>
+        <IconBtn label="Add images or screenshots" onClick={() => imageRef.current?.click()}>
           <ImageIcon className="size-4" />
         </IconBtn>
-        <IconBtn label="Import from Figma" onClick={() => setAttach((s) => [...new Set([...s, "Figma: Onboarding v3"])])}>
-          <FigmaIcon className="size-3.5" />
-        </IconBtn>
+        <div className="relative">
+          <IconBtn label="Add a Figma link" onClick={() => setFigmaOpen((v) => !v)}>
+            <FigmaIcon className="size-3.5" />
+          </IconBtn>
+          {figmaOpen && (
+            <div className="absolute left-0 top-10 z-20 w-80 rounded-xl border border-line bg-surface p-3 shadow-xl">
+              <div className="flex items-center justify-between">
+                <p className="text-[12.5px] font-medium">Paste a Figma link</p>
+                <button onClick={() => setFigmaOpen(false)} aria-label="Close" className="rounded p-0.5 text-ink-3 hover:text-ink"><X className="size-3.5" /></button>
+              </div>
+              <form
+                className="mt-2 flex gap-1.5"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  addFigma();
+                }}
+              >
+                <input autoFocus value={figmaUrl} onChange={(e) => setFigmaUrl(e.target.value)} placeholder="https://www.figma.com/design/…" className="h-8 min-w-0 flex-1 rounded-lg border border-line px-2.5 text-[12.5px] outline-none focus:border-bp" />
+                <button type="submit" className="h-8 rounded-lg bg-ink px-2.5 text-[12.5px] font-medium text-white">Add</button>
+              </form>
+              <p className="mt-1.5 text-[11px] text-ink-3">We use the frames as a visual reference for the UI.</p>
+            </div>
+          )}
+        </div>
         <button
           onClick={enhance}
           className="flex h-8 items-center gap-1.5 rounded-lg px-2 text-[12.5px] font-medium text-ink-2 hover:bg-sunken"
@@ -127,6 +194,7 @@ export function Composer({
           </button>
         </div>
       </div>
+      {error && <p className="px-4 pb-2.5 text-left text-[12px] text-bad">{error}</p>}
     </div>
   );
 }

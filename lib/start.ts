@@ -2,7 +2,7 @@
 
 import { createProject } from "./store";
 import { fallbackPlan } from "./planner";
-import type { Framework, ProjectData } from "./types";
+import type { Attachment, Framework, ProjectData } from "./types";
 
 const PENDING = "architect.pending";
 
@@ -11,6 +11,7 @@ export interface PendingStart {
   source: ProjectData["source"];
   framework?: Framework;
   model?: string;
+  attachments?: Attachment[];
 }
 
 export function savePending(p: PendingStart) {
@@ -43,6 +44,7 @@ export async function startProject(p: PendingStart): Promise<string> {
   const name = p.prompt ? fallbackPlan(p.prompt).name : "Untitled project";
   const project = await createProject(name, {
     prompt: p.prompt,
+    attachments: p.attachments,
     source: p.source,
     model: p.model ?? "auto",
     answers: p.framework ? { framework: p.framework } : undefined,

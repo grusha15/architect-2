@@ -8,7 +8,7 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains" });
 
 export const metadata: Metadata = {
-  title: "Architect 2.0 — build agentic apps by prompting",
+  title: "Architect 2.0: build agentic apps by prompting",
   description:
     "Describe it, watch it build, own every line. Architect 2.0 is a vibe-coding platform for builders and developers to create, import, and deploy agentic applications.",
 };

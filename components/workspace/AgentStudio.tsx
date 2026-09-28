@@ -56,7 +56,7 @@ export function AgentStudio({ plan, onChange, onFramework, onOpenCode }: { plan:
             {FRAMEWORKS.map((f) => <option key={f.id} value={f.id}>{f.label}</option>)}
           </select>
         </label>
-        <span className="hidden text-[11.5px] text-ink-3 lg:inline">Switching regenerates the adapter — the manifest, prompts and UI stay the same.</span>
+        <span className="hidden text-[11.5px] text-ink-3 lg:inline">Switching regenerates the adapter. The manifest, prompts and UI stay the same.</span>
         <Button size="sm" variant="ghost" className="ml-auto" onClick={onOpenCode}><Code2 className="size-3.5" /> View code</Button>
       </div>
 
@@ -273,7 +273,7 @@ function Traces({ traces }: { traces: Trace[] }) {
                     </div>
                   );
                 })}
-                {!t.ok && <p className="pt-1 text-[11.5px] text-bad">Tool timeout on step 2 — retried once, then escalated to a human.</p>}
+                {!t.ok && <p className="pt-1 text-[11.5px] text-bad">Tool timeout on step 2. Retried once, then escalated to a human.</p>}
               </div>
             )}
           </div>

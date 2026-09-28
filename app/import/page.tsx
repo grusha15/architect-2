@@ -111,7 +111,7 @@ function Import() {
   const boot = async () => {
     if (!repo) return;
     setStage("boot");
-    const lines = ["Claiming sandbox from warm pool… sbx_91c ready (184ms)", "pnpm install — 612 packages (cache hit)", "uv sync — 38 packages", "Injecting secrets from vault (3)", "Starting dev server on :3000", "✓ Preview ready"];
+    const lines = ["Claiming sandbox from warm pool… sbx_91c ready (184ms)", "pnpm install: 612 packages (cache hit)", "uv sync: 38 packages", "Injecting secrets from vault (3)", "Starting dev server on :3000", "✓ Preview ready"];
     for (let i = 0; i < lines.length; i++) {
       await new Promise((r) => setTimeout(r, 520));
       setBootLines((s) => [...s, lines[i]]);
@@ -137,7 +137,7 @@ function Import() {
           .map(([k, v]) => ({ key: k, last4: v.slice(-4), addedAt: now })),
         checkpoints: [{ id: uid(), title: `Imported ${repo.full_name}@${repo.default_branch}`, detail: "Baseline from GitHub", at: now, files: 142, preview: project.data.preview }],
         messages: [
-          { id: uid(), role: "agent", at: now, text: `I imported **${repo.full_name}** and it's running. I found a ${fw} agent workflow, a FastAPI backend and a Next.js front end. I'm on branch \`architect/import\` — nothing goes to \`${repo.default_branch}\` without a PR. What should we work on?` },
+          { id: uid(), role: "agent", at: now, text: `I imported **${repo.full_name}** and it's running. I found a ${fw} agent workflow, a FastAPI backend and a Next.js front end. I'm on branch \`architect/import\`, and nothing goes to \`${repo.default_branch}\` without a PR. What should we work on?` },
         ],
       },
     });
@@ -249,7 +249,7 @@ function Import() {
         {stage === "env" && (
           <div className="p-5">
             <h2 className="flex items-center gap-2 text-[15px] font-semibold"><KeyRound className="size-4" /> Your app needs 3 secrets</h2>
-            <p className="mt-1 text-[13px] text-ink-2">Found in <code className="font-mono">.env.example</code>. Values are encrypted in the vault and injected at runtime — they never land in your repo or the chat.</p>
+            <p className="mt-1 text-[13px] text-ink-2">Found in <code className="font-mono">.env.example</code>. Values are encrypted in the vault and injected at runtime. They never land in your repo or the chat.</p>
             <div className="mt-4 space-y-2.5">
               {Object.keys(env).map((k) => (
                 <div key={k} className="grid items-center gap-2 sm:grid-cols-[200px_1fr]">

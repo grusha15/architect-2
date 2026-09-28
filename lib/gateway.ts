@@ -1,5 +1,5 @@
 /**
- * Minimal model gateway (server-only). One internal interface — `complete()` — with
+ * Minimal model gateway (server-only). One internal interface, `complete()`, with
  * provider adapters behind it. The rest of the app never talks to a provider directly,
  * which is what lets users switch models without anything else changing.
  */

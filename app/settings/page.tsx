@@ -9,6 +9,8 @@ import { Avatar, Badge, Button, Field, Segmented, inputCls } from "@/components/
 import { useToast } from "@/components/toast";
 import { useAuth } from "@/lib/auth";
 import { MODELS } from "@/lib/planner";
+import { planById, usePlan } from "@/lib/plan";
+import { Pricing } from "@/components/Pricing";
 import { getProfile, saveProfile } from "@/lib/store";
 import type { Role, ViewMode } from "@/lib/types";
 
@@ -170,27 +172,32 @@ function TeamTab() {
 }
 
 function BillingTab() {
+  const { user } = useAuth();
+  const plan = planById(usePlan(user?.id));
+  const credits = plan.credits || 10000;
   const rows = [
-    { l: "Build credits", used: 38, total: 50, unit: "credits" },
-    { l: "Sandbox hours", used: 6.2, total: 20, unit: "h" },
-    { l: "Agent runs (deployed apps)", used: 412, total: 1000, unit: "runs" },
-    { l: "Bandwidth", used: 1.4, total: 10, unit: "GB" },
+    { l: "Build credits", used: 12, total: credits, unit: "credits" },
+    { l: "Sandbox hours", used: 6.2, total: plan.id === "free" ? 20 : 200, unit: "h" },
+    { l: "Agent runs (deployed apps)", used: 412, total: plan.id === "free" ? 1000 : 25000, unit: "runs" },
+    { l: "Bandwidth", used: 1.4, total: plan.id === "free" ? 10 : 100, unit: "GB" },
   ];
   return (
     <div className="space-y-4">
-      <Card title="Free plan" sub="Resets on the 1st of each month.">
+      <Card title={`${plan.name} plan · usage`} sub="Resets on the 1st of each month.">
         <div className="space-y-3">
           {rows.map((r) => (
             <div key={r.l}>
-              <div className="flex justify-between text-[13px]"><span>{r.l}</span><span className="font-mono text-ink-3">{r.used} / {r.total} {r.unit}</span></div>
-              <div className="mt-1 h-1.5 rounded-full bg-sunken"><div className="h-full rounded-full bg-bp" style={{ width: `${(r.used / r.total) * 100}%` }} /></div>
+              <div className="flex justify-between text-[13px]"><span>{r.l}</span><span className="font-mono text-ink-3">{r.used} / {r.total.toLocaleString()} {r.unit}</span></div>
+              <div className="mt-1 h-1.5 rounded-full bg-sunken"><div className="h-full rounded-full bg-bp" style={{ width: `${Math.max(1, (r.used / r.total) * 100)}%` }} /></div>
             </div>
           ))}
         </div>
-        <Button variant="primary" className="mt-5">Upgrade to Pro — $25/mo</Button>
+      </Card>
+      <Card title="Change plan" sub="Demo billing: switching plans updates your limits instantly, no card required.">
+        <Pricing compact />
       </Card>
       <Card title="Spend controls" sub="Protect against runaway agents in deployed apps.">
-        <div className="flex items-center gap-2 text-[13.5px]">Alert me at <input className={inputCls + " w-20"} defaultValue="80" /> % of monthly limit, hard-stop at <input className={inputCls + " w-20"} defaultValue="100" /> %</div>
+        <div className="flex flex-wrap items-center gap-2 text-[13.5px]">Alert me at <input className={inputCls + " w-20"} defaultValue="80" /> % of monthly limit, hard-stop at <input className={inputCls + " w-20"} defaultValue="100" /> %</div>
       </Card>
     </div>
   );
@@ -211,7 +218,7 @@ function TokensTab() {
           </li>
         ))}
       </ul>
-      {tokens.length > 0 && <p className="mt-2 text-[12px] text-warn">Copy it now — tokens are only shown once.</p>}
+      {tokens.length > 0 && <p className="mt-2 text-[12px] text-warn">Copy it now. Tokens are only shown once.</p>}
     </Card>
   );
 }

@@ -23,6 +23,7 @@ export async function POST(req: Request) {
     answers?: Record<string, string>;
     model?: string;
     framework?: Framework;
+    context?: string;
   };
   const prompt = (body.prompt ?? "").slice(0, 2000);
   const base = fallbackPlan(prompt, body.answers, body.framework);
@@ -32,7 +33,7 @@ export async function POST(req: Request) {
     const answers = body.answers ? `\nClarifications: ${JSON.stringify(body.answers)}` : "";
     const { text, provider, model } = await complete(body.model ?? "auto", {
       system: SYSTEM,
-      user: `Idea: ${prompt}${answers}`,
+      user: `Idea: ${prompt}${answers}${body.context ? `\n\nAttachments from the user (use them as requirements and reference):\n${body.context.slice(0, 12000)}` : ""}`,
       json: true,
     });
     const llm = extractJson<Partial<Plan>>(text);

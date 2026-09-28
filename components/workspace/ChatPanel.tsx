@@ -29,13 +29,16 @@ import {
 } from "lucide-react";
 import type { BuildStep } from "@/lib/build";
 import { CLARIFY_QUESTIONS, FRAMEWORKS } from "@/lib/planner";
-import type { ChatMessage, Framework, Plan } from "@/lib/types";
+import type { Attachment, ChatMessage, Framework, Plan } from "@/lib/types";
+import { FILE_ACCEPT, readFiles } from "@/lib/attachments";
+import { AttachmentChips } from "../Attachments";
 import { Badge, Button, Segmented } from "../ui";
 
 export type Detail = "plain" | "technical";
 
 export interface ChatPanelProps {
   prompt: string;
+  promptAttachments?: Attachment[];
   phase: "clarify" | "planning" | "review" | "building" | "ready";
   plan: Plan | null;
   planSource?: "llm" | "fallback";
@@ -48,7 +51,7 @@ export interface ChatPanelProps {
   onStop: () => void;
   onResume: () => void;
   messages: ChatMessage[];
-  onSend: (text: string) => void;
+  onSend: (text: string, attachments: Attachment[]) => void;
   agentBusy: boolean;
   selected: { id: string; label: string } | null;
   clearSelected: () => void;
@@ -80,7 +83,7 @@ export function ChatPanel(p: ChatPanelProps) {
       </div>
 
       <div ref={feed} className="scroll-thin min-h-0 flex-1 space-y-4 overflow-y-auto px-3 py-4">
-        {!p.imported && p.prompt && <UserBubble text={p.prompt} />}
+        {!p.imported && p.prompt && <UserBubble text={p.prompt} attachments={p.promptAttachments} />}
 
         {p.phase === "clarify" && <ClarifyCard onDone={p.onAnswer} />}
 
@@ -107,7 +110,7 @@ export function ChatPanel(p: ChatPanelProps) {
           </AgentRow>
         )}
 
-        {p.messages.map((m) => (m.role === "user" ? <UserBubble key={m.id} text={m.text} /> : m.role === "system" ? <SystemLine key={m.id} text={m.text} /> : (
+        {p.messages.map((m) => (m.role === "user" ? <UserBubble key={m.id} text={m.text} attachments={m.attachments} /> : m.role === "system" ? <SystemLine key={m.id} text={m.text} /> : (
           <AgentRow key={m.id}>
             <div className="text-[13.5px] leading-relaxed text-ink"><Rich text={m.text} /></div>
           </AgentRow>
@@ -132,7 +135,7 @@ export function ChatPanel(p: ChatPanelProps) {
 
       <ChatComposer
         disabled={p.phase !== "ready" || p.agentBusy}
-        hint={p.phase === "building" ? "The agent is building — you can stop it anytime." : p.phase !== "ready" ? "Approve the plan to start building." : undefined}
+        hint={p.phase === "building" ? "The agent is building. You can stop it anytime." : p.phase !== "ready" ? "Approve the plan to start building." : undefined}
         onSend={p.onSend}
         selected={p.selected}
         clearSelected={p.clearSelected}
@@ -150,9 +153,14 @@ function AgentRow({ children }: { children: React.ReactNode }) {
   );
 }
 
-function UserBubble({ text }: { text: string }) {
+function UserBubble({ text, attachments = [] }: { text: string; attachments?: Attachment[] }) {
   return (
-    <div className="anim-rise flex justify-end">
+    <div className="anim-rise flex flex-col items-end gap-1.5">
+      {attachments.length > 0 && (
+        <div className="flex max-w-[88%] justify-end">
+          <AttachmentChips items={attachments} size="sm" />
+        </div>
+      )}
       <p className="max-w-[88%] whitespace-pre-wrap rounded-2xl rounded-br-md bg-sunken px-3.5 py-2 text-[13.5px] leading-relaxed">{text}</p>
     </div>
   );
@@ -202,7 +210,7 @@ function ClarifyCard({ onDone }: { onDone: (a: Record<string, string>) => void }
           </div>
         ))}
         <div className="flex items-center justify-between border-t border-line pt-3">
-          <button onClick={() => onDone({})} className="text-[12.5px] text-ink-3 hover:text-ink">Skip — you decide</button>
+          <button onClick={() => onDone({})} className="text-[12.5px] text-ink-3 hover:text-ink">Skip, you decide</button>
           <Button size="sm" variant="primary" disabled={!complete} onClick={() => onDone(answers)}>Draft the plan</Button>
         </div>
       </div>
@@ -419,7 +427,7 @@ function Timeline({ steps, index, detail, done, paused, onStop, onResume }: { st
           );
         })}
       </ol>
-      {paused && <p className="border-t border-line px-3 py-2 text-[12px] text-ink-2">Paused. Nothing is lost — the last restore point is safe. Resume when ready.</p>}
+      {paused && <p className="border-t border-line px-3 py-2 text-[12px] text-ink-2">Paused. Nothing is lost. The last restore point is safe. Resume when ready.</p>}
     </div>
   );
 }
@@ -433,23 +441,47 @@ function ChatComposer({
 }: {
   disabled: boolean;
   hint?: string;
-  onSend: (t: string) => void;
+  onSend: (t: string, attachments: Attachment[]) => void;
   selected: { id: string; label: string } | null;
   clearSelected: () => void;
 }) {
   const [text, setText] = useState("");
+  const [atts, setAtts] = useState<Attachment[]>([]);
+  const [err, setErr] = useState<string | null>(null);
   const ref = useRef<HTMLTextAreaElement>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const add = async (files: FileList | File[] | null) => {
+    if (!files || !files.length) return;
+    const { items, errors } = await readFiles(files, atts.length);
+    setAtts((s) => [...s, ...items]);
+    setErr(errors[0] ?? null);
+  };
   useEffect(() => {
     if (selected) ref.current?.focus();
   }, [selected]);
   const send = () => {
-    if (!text.trim() || disabled) return;
-    onSend(text.trim());
+    if ((!text.trim() && !atts.length) || disabled) return;
+    onSend(text.trim() || "Use the attached files as a reference.", atts);
     setText("");
+    setAtts([]);
+    setErr(null);
   };
   return (
     <div className="shrink-0 border-t border-line p-3">
-      <div className={clsx("rounded-xl border bg-surface transition", disabled ? "border-line" : "border-line-strong focus-within:border-bp")}>
+      <input ref={fileRef} type="file" multiple accept={`${FILE_ACCEPT},image/*`} className="hidden" onChange={(e) => { add(e.target.files); e.target.value = ""; }} />
+      <div
+        className={clsx("rounded-xl border bg-surface transition", disabled ? "border-line" : "border-line-strong focus-within:border-bp")}
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={(e) => {
+          e.preventDefault();
+          if (!disabled) add(e.dataTransfer.files);
+        }}
+      >
+        {atts.length > 0 && (
+          <div className="px-2.5 pt-2.5">
+            <AttachmentChips items={atts} size="sm" onRemove={(id) => setAtts((s) => s.filter((x) => x.id !== id))} />
+          </div>
+        )}
         {selected && (
           <div className="flex items-center gap-1.5 px-3 pt-2.5">
             <span className="flex items-center gap-1 rounded-md bg-bp-50 px-1.5 py-0.5 text-[11.5px] font-medium text-bp">
@@ -462,6 +494,13 @@ function ChatComposer({
           ref={ref}
           value={text}
           onChange={(e) => setText(e.target.value)}
+          onPaste={(e) => {
+            const files = Array.from(e.clipboardData.files);
+            if (files.length) {
+              e.preventDefault();
+              add(files);
+            }
+          }}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
@@ -474,13 +513,26 @@ function ChatComposer({
           className="block w-full resize-none bg-transparent px-3 pt-2.5 text-[13.5px] outline-none placeholder:text-ink-3 disabled:cursor-not-allowed"
         />
         <div className="flex items-center gap-1 px-2 pb-2">
-          <button className="grid size-7 place-items-center rounded-md text-ink-3 hover:bg-sunken hover:text-ink" aria-label="Attach"><Paperclip className="size-3.5" /></button>
-          <button className="grid size-7 place-items-center rounded-md text-ink-3 hover:bg-sunken hover:text-ink" aria-label="Reference a file" title="Reference PLAN.md"><FileText className="size-3.5" /></button>
+          <button type="button" disabled={disabled} onClick={() => fileRef.current?.click()} className="grid size-7 place-items-center rounded-md text-ink-3 hover:bg-sunken hover:text-ink disabled:opacity-40" aria-label="Attach files or images" title="Attach files or images"><Paperclip className="size-3.5" /></button>
+          <button
+            type="button"
+            disabled={disabled}
+            onClick={() => {
+              setText((t) => (t.includes("@PLAN.md") ? t : `${t}${t && !t.endsWith(" ") ? " " : ""}@PLAN.md `));
+              ref.current?.focus();
+            }}
+            className="grid size-7 place-items-center rounded-md text-ink-3 hover:bg-sunken hover:text-ink disabled:opacity-40"
+            aria-label="Reference the plan"
+            title="Reference PLAN.md"
+          >
+            <FileText className="size-3.5" />
+          </button>
           <span className="ml-1 hidden text-[11px] text-ink-3 sm:inline">Enter to send · Shift+Enter for new line</span>
-          <button onClick={send} disabled={disabled || !text.trim()} aria-label="Send" className="ml-auto grid size-7 place-items-center rounded-lg bg-bp text-white disabled:bg-line-strong">
+          <button onClick={send} disabled={disabled || (!text.trim() && !atts.length)} aria-label="Send" className="ml-auto grid size-7 place-items-center rounded-lg bg-bp text-white disabled:bg-line-strong">
             <ArrowUp className="size-4" />
           </button>
         </div>
+        {err && <p className="px-3 pb-2 text-[11.5px] text-bad">{err}</p>}
       </div>
     </div>
   );

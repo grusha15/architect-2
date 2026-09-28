@@ -42,7 +42,7 @@ def note(x, y, s, cls="s", color=INK3):
 
 
 # ---------------------------------------------------------------- title
-out.append(f'<text x="40" y="50" class="h">Architect 2.0 — System Architecture</text>')
+out.append(f'<text x="40" y="50" class="h">Architect 2.0: System Architecture</text>')
 note(40, 72, "Control plane on Kubernetes · untrusted code in Firecracker microVMs · one model gateway · Git as the source of truth · scale-to-zero app hosting", "s", INK2)
 
 # ---------------------------------------------------------------- clients
@@ -97,7 +97,7 @@ for i in range(6):
     out.append(f'<rect x="{1400 + i*23}" y="141" width="17" height="17" rx="4" fill="{BP50}" stroke="{BP}"/>')
 out.append(f'<rect x="1150" y="186" width="300" height="252" rx="10" fill="#fff" stroke="{BP}" stroke-width="1.6"/>')
 note(1162, 206, "microVM · one per active project", "t2", INK)
-box(1166, 218, 268, 42, "envd — exec · fs · pty API (gRPC)", [])
+box(1166, 218, 268, 42, "envd: exec · fs · pty API (gRPC)", [])
 box(1166, 268, 130, 56, "Dev server :3000", ["Next/Vite + HMR"])
 box(1304, 268, 130, 56, "Agents API :8000", ["FastAPI · any framework"])
 box(1166, 332, 268, 42, "/workspace git repo · turn = commit", [])
@@ -118,7 +118,7 @@ box(1425, 570, 125, 112, "Tool APIs", ["Slack · Gmail", "HubSpot · Stripe", "M
 zone(1130, 740, 440, 350, "USER APP RUNTIME")
 box(1150, 772, 190, 60, "Build workers", ["BuildKit · Nixpacks · isolated"])
 box(1360, 772, 190, 60, "Image registry", ["immutable, signed images"])
-box(1150, 850, 400, 80, "App hosting — Knative on K8s (or Cloud Run)", ["revision per deploy · scale-to-zero · min/max instances", "preview environment per branch · instant rollback"], accent=True)
+box(1150, 850, 400, 80, "App hosting: Knative on K8s (or Cloud Run)", ["revision per deploy · scale-to-zero · min/max instances", "preview environment per branch · instant rollback"], accent=True)
 box(1150, 948, 190, 70, "Postgres per app", ["Neon · branch per env", "copy-on-write previews"])
 box(1360, 948, 190, 70, "Lyzr Agent Runtime", ["memory · RAG · guardrails", "evals · traces"])
 note(1150, 1044, "Static assets are served from the CDN.", "s", INK2)
