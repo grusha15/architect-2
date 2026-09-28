@@ -2,7 +2,8 @@
 
 A vibe-coding platform for **builders and developers** to create, import, iterate on and deploy **agentic applications** by prompting.
 
-- **Live app:** _add your Vercel URL here_
+- **Live app:** https://architect-2-eight.vercel.app
+- **Repo:** https://github.com/grusha15/architect-2
 - **Architecture write-up:** [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
 - **Architecture diagram:** [`docs/architecture-diagram.svg`](docs/architecture-diagram.svg) (also at `/architecture` in the app)
 
